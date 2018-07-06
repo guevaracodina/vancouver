@@ -106,9 +106,11 @@ fitPoly = interp1(currWaveNumber, fitPoly, waveNumber);
 raman = originalRaman - fitPoly;
 % Fluorescence Background Spectrum
 fluo = fitPoly;
-% Boxcar smoothing
-raman = smooth(raman, nPoints, 'moving');
-fluo = smooth(fluo, nPoints, 'moving');
+% Boxcar smoothing (default: 'moving', sgolay)
+raman = smooth(raman, nPoints, 'sgolay');
+% Avoid negative data points
+raman = raman - min(raman);
+fluo = smooth(fluo, nPoints, 'sgolay');
 % Restore warning
 warning('on','MATLAB:polyfit:RepeatedPointsOrRescale')
 end % function
