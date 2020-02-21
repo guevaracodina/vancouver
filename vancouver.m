@@ -42,7 +42,7 @@ if numVarArgs > 4
         'requires at most 4 optional inputs: polyOrder, errThreshold, nPoints, nIter');
 end
 % set defaults for optional inputs
-optArgs = {5 0.05 5 100};
+optArgs = {5 0.05 11 100};
 % skip any new inputs if they are empty
 newVals = cellfun(@(x) ~isempty(x), varargin);
 % now put these defaults into the optArgs cell array, and overwrite the ones
@@ -101,16 +101,16 @@ while doFlag
 end
 
 % Interpolate in order to subtract fluorescence from original spectrum
-fitPoly = interp1(currWaveNumber, fitPoly, waveNumber);
+fitPolyFinal = interp1(currWaveNumber, fitPoly, waveNumber, 'makima', 'extrap');
 % Pure Raman Spectrum
-raman = originalRaman - fitPoly;
+raman = originalRaman - fitPolyFinal;
 % Fluorescence Background Spectrum
-fluo = fitPoly;
+fluo = fitPolyFinal;
 % Boxcar smoothing (default: 'moving', sgolay)
-raman = smooth(raman, nPoints, 'sgolay');
+raman = smooth(raman, nPoints, 'moving');
 % Avoid negative data points
 raman = raman - min(raman);
-fluo = smooth(fluo, nPoints, 'sgolay');
+fluo = smooth(fluo, nPoints, 'moving');
 % Restore warning
 warning('on','MATLAB:polyfit:RepeatedPointsOrRescale')
 end % function
